@@ -5,7 +5,7 @@ const cheerio = require("cheerio");
 
 router.get("/", async function (req, res) {
   try {
-    const availableSearchQueries = [];
+    let availableSearchQueries = [];
     const url = "https://forkify-api.herokuapp.com/phrases.html";
     const fetchCall = await axios(url);
     const data = fetchCall.data;
@@ -15,6 +15,7 @@ router.get("/", async function (req, res) {
       const item = $(ele);
       availableSearchQueries.push(item.text().trimStart());
     });
+    availableSearchQueries = availableSearchQueries.sort();
     res.json(availableSearchQueries);
   } catch (err) {
     console.log(err);
