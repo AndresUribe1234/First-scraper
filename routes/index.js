@@ -1,14 +1,24 @@
 const express = require("express");
 const router = express.Router();
+const axios = require("axios");
+const cheerio = require("cheerio");
 
-router.get("/", (req, res) => {
-  res.status(200)
-    .json(`hello world! End point using express router "/api" ->${req.url}
-    
-    ENV variables test
-    ENV 1:${process.env.API_BASE_URL}
-    ENV 2:${process.env.API_KEY_NAME}
-    `);
+router.get("/", async function (req, res) {
+  try {
+    const availableSearchQueries = [];
+    const url = "https://forkify-api.herokuapp.com/phrases.html";
+    const fetchCall = await axios(url);
+    const data = fetchCall.data;
+    const $ = cheerio.load(data);
+
+    $("li").each((ind, ele) => {
+      const item = $(ele);
+      availableSearchQueries.push(item.text().trimStart());
+    });
+    res.json(availableSearchQueries);
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 module.exports = router;
